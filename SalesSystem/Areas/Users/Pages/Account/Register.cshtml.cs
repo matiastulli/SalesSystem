@@ -122,11 +122,11 @@ namespace SalesSystem.Areas.Users.Pages.Account
                             _dataUser2 = null;
                             _dataUser1 = null;
                             _dataInput = null;
-                            return Redirect("/Home/Index");
+                            return Redirect("/Users/Users?area=Users");
                         }
                         else
                         {
-                            return Redirect("/Home/Index");
+                            return Redirect("/Users/Register");
                         }
                     }
                     else
@@ -156,14 +156,14 @@ namespace SalesSystem.Areas.Users.Pages.Account
                     {
                         return Redirect("/Users/Users?area=Users");
                     }
-                    
+
                 }
-                   
+
             }
             else
             {
                 _dataUser1 = JsonConvert.DeserializeObject<InputModelRegister>(dataUser);
-                return Redirect("/Home/Index");
+                return Redirect("/Users/Register?id=1");
             }
 
         }
