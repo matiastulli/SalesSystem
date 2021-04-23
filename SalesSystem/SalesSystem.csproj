@@ -13,7 +13,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.5" />
   </ItemGroup>
 
 
@@ -21,6 +21,7 @@
     <Folder Include="Areas\Customers\Data\" />
     <Folder Include="Areas\Principal\Data\" />
     <Folder Include="Areas\Principal\Models\" />
+    <Folder Include="Areas\Setting\Data\" />
     <Folder Include="Areas\Users\Data\" />
   </ItemGroup>
 

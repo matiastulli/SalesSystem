@@ -39,7 +39,15 @@ namespace SalesSystem.Areas.Customers.Models
 
         public Decimal PreviousDebt { get; set; }
         public Decimal Payment { get; set; }
+        
         public string IdUser { get; set; }
         public string User { get; set; }
+        
+        
+        public int IdPaymentsInterest { get; set; }
+        public Decimal Interests { get; set; }
+        public int Fee { get; set; }
+        public int IdCustomer { get; set; }
+
     }
 }

@@ -74,6 +74,8 @@ namespace SalesSystem
                 endpoints.MapAreaControllerRoute("Principal", "Principal", "{controller=Principal}/{action=Principal}/{id?}");
 
                 endpoints.MapAreaControllerRoute("Customers", "Customers", "{controller=Customers}/{action=Customers}/{id?}");
+
+                endpoints.MapAreaControllerRoute("Setting", "Setting", "{controller=Setting}/{action=Setting}/{id?}");
                 endpoints.MapRazorPages();
             });
         }

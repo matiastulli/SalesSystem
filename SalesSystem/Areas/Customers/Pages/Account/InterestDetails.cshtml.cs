@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using SalesSystem.Areas.Customers.Models;
@@ -12,26 +10,17 @@ using SalesSystem.Library;
 
 namespace SalesSystem.Areas.Customers.Pages.Account
 {
-    [Authorize]
-    public class DetailsDebt : PageModel
+    public class InterestDetailsModel : PageModel
     {
         private static int _idDebt = 0;
         private static int _idClient = 0;
         public string Money = "$";
-        private static string _errorMessage;
         public static InputModelRegister _dataClient;
-        private LCodes _codes;
-        private ApplicationDbContext _context;
-        private UserManager<IdentityUser> _userManager;
         private LCustomers _customer;
 
-        public DetailsDebt(
-            UserManager<IdentityUser> userManager,
+        public InterestDetailsModel(
             ApplicationDbContext context)
         {
-            _context = context;
-            _userManager = userManager;
-            _codes = new LCodes();
             _customer = new LCustomers(context);
         }
 
@@ -50,7 +39,7 @@ namespace SalesSystem.Areas.Customers.Pages.Account
                     return Redirect("/Customers/Reports?id=" + _idClient + "&area=Customers");
                 }
             }
-            _dataClient = _customer.getTClientPayment(idDebt);
+            _dataClient = _customer.getTClientInterest(idDebt);
             Input = new InputModel
             {
                 DataClient = _dataClient,
@@ -67,15 +56,12 @@ namespace SalesSystem.Areas.Customers.Pages.Account
             public InputModelRegister DataClient { get; set; }
         }
 
-        public async Task<IActionResult> OnPost()
+        public IActionResult OnPost()
         {
             var _nameClient = $"{_dataClient.Name} {_dataClient.LastName}";
-            var _debt = string.Format("{0:#,###,###,##0.00####}", _dataClient.Debt);
-            var _currentDebt = string.Format("{0:#,###,###,##0.00####}", _dataClient.CurrentDebt);
+            var _interests = string.Format("{0:#,###,###,##0.00####}", _dataClient.Interests);
             var _payment = string.Format("{0:#,###,###,##0.00####}", _dataClient.Payment);
             var _change = string.Format("{0:#,###,###,##0.00####}", _dataClient.Change);
-            var monthly = string.Format("{0:#,###,###,##0.00####}", _dataClient.Monthly); //Falta
-            var previousDebt = string.Format("{0:#,###,###,##0.00####}", _dataClient.PreviousDebt); //Falta
 
             LTicket Ticket1 = new LTicket();
             Ticket1.AbreCajon(); //Abre el cajon
@@ -91,19 +77,18 @@ namespace SalesSystem.Areas.Customers.Pages.Account
             Ticket1.TextoIzquierda($"Fecha: {_dataClient.Date.ToString("dd/MM/yy")}");
             Ticket1.TextoIzquierda($"Usuario: {_dataClient.User}");
             Ticket1.LineasGuion();
-            Ticket1.TextoCentro($"Su credito {Money}{_debt}");
-            Ticket1.TextoExtremo($"Cuotas por mes:", $"{Money}{monthly}");
-            Ticket1.TextoExtremo($"Deuda anterior:", $"{Money}{previousDebt}");
+            Ticket1.TextoCentro($"Intereses {Money}{_interests}");
             Ticket1.TextoExtremo($"Pago:", $"{Money}{_payment}");
             Ticket1.TextoExtremo($"Cambio:", $"{Money}{_change}");
-            Ticket1.TextoExtremo($"Deuda actual:", $"{Money}{_currentDebt}");
-            Ticket1.TextoExtremo($"Próximo pago:", $"{_dataClient.Deadline.ToString("dd/MM/yy")}");
+            Ticket1.TextoExtremo($"Cuotas:", $"{Money}{_dataClient.Fee}");
             Ticket1.TextoCentro("Juan Matias Tulli");
             Ticket1.CortaTicket(); //Corta el ticket
 
             Ticket1.ImprimirTicket("Microsoft XPS Document Writer");
 
             return Redirect("/Customers/Reports?id=" + _idClient + "&area=Customers");
+
         }
+
     }
 }

@@ -396,5 +396,66 @@ namespace SalesSystem.Library
             return listTPayments2;
         }
 
+        public InputModelRegister getTClientInterest(int idDebt)
+        {
+            var dataClients = new InputModelRegister();
+            using (var dbContext = new ApplicationDbContext())
+            {
+                var query = dbContext.TPayments_Reports_Customer_Interest.Join(dbContext.TClients,
+                    p => p.IdCustomer, c => c.IdClient, (p, c) => new {
+
+                        c.IdClient,
+                        c.Nid,
+                        c.Name,
+                        c.LastName,
+                        c.Email,
+                        c.Phone,
+                        c.Direction,
+                        c.Credit,
+                        p.IdPaymentsinterest,
+                        p.Interests,
+                        p.Payment,
+                        p.Change,
+                        p.Fee,
+                        p.Date,
+                        p.Ticket,
+                        p.IdCustomer,
+                        p.IdUser,
+                        p.User
+
+                    }).Where(c => c.IdPaymentsinterest.Equals(idDebt)).ToList();
+
+                if (!query.Count.Equals(0))
+                {
+                    var data = query.ToList().Last();
+                    dataClients = new InputModelRegister
+                    {
+
+                        IdClient = data.IdClient,
+                        Nid = data.Nid,
+                        Name = data.Name,
+                        LastName = data.LastName,
+                        Phone = data.Phone,
+                        Email = data.Email,
+                        Direction = data.Direction,
+                        Credit = data.Credit,
+                        IdPaymentsInterest = data.IdPaymentsinterest,
+                        Interests = data.Interests,
+                        Payment = data.Payment,
+                        Change = data.Change,
+                        Fee = data.Fee,
+                        Date = data.Date,
+                        Ticket = data.Ticket,
+                        IdCustomer = data.IdCustomer,
+                        IdUser = data.IdUser,
+                        User = data.User,
+                    };
+                }
+            }
+            return dataClients;
+        }
+
+
     }
+ 
 }

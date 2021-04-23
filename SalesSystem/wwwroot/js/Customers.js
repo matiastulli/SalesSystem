@@ -59,7 +59,24 @@
         var payment1 = parseFloat(tempValue);
         let section = parseInt(localStorage.getItem("section"));
         switch (section) {
+            case 1:
+                let monthly = parseFloat(document.getElementById("monthly").value);
+                if (payment1 >= monthly) {
+                    if (payment1 > monthly) {
+                        let change = payment1 - monthly;
+                        let value = "El cambio para el cliente es: " + numberDecimales(change);
+                        document.getElementById("paymentMessage").innerHTML = value;
+                    }
+                    $("#payment").attr("disabled", false);
 
+                }
+                else {
+                    $("#payment").attr("disabled", true);
+                    document.getElementById("paymentMessage").innerHTML = "";
+                }
+
+
+                break;
             case 2:
                 var payment2 = parseFloat(localStorage.getItem("payment"));
                 if (payment1 >= payment2) {

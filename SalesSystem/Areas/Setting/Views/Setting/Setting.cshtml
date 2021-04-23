@@ -1,0 +1,42 @@
+﻿@model InputModelSetting
+@{
+    ViewData["Title"] = "Setting";
+}
+
+
+<div class="container">
+    <h1>Setting</h1>
+    <div class="row">
+        <div class="col-sm ">
+            <div class="card" style="width: 21rem;">
+                <div class="card-header">
+                    <h5>Setting</h5>
+                </div>
+                <div class="card-body">
+                    <nav>
+                        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                            <a class="nav-item nav-link active" data-toggle="tab" href="#nav-money" role="tab" aria-selected="true">Tipo de moneda</a>
+                            <a class="nav-item nav-link" data-toggle="tab" href="#nav-interests" role="tab" aria-selected="false">Intereses</a>
+                        </div>
+                    </nav>
+                    <div class="tab-content" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id="nav-money" role="tabpanel">
+                            <form asp-area="Setting" asp-controller="Setting" asp-action="TypeMoney" method="post">
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="inlineRadio1" asp-for="RadioOptions" value="1" />
+                                    <label class="form-check-label" for="inlineRadio1">L</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="inlineRadio2" asp-for="RadioOptions" value="2" />
+                                    <label class="form-check-label" for="inlineRadio2">$</label>
+                                </div>
+                            </form>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -86,7 +86,6 @@ namespace SalesSystem.Areas.Customers.Pages.Account
             }
             else
             {
-
                 Input = new InputModel
                 {
 
@@ -110,46 +109,46 @@ namespace SalesSystem.Areas.Customers.Pages.Account
             {
                 if (_dataClient2 == null)
                 {
-                    //if (User.IsInRole("Admin"))
-                    //{
-                    if (await SaveAsync())
+                    if (User.IsInRole("Admin"))
                     {
-                        _dataClient2 = null;
-                        _dataClient1 = null;
-                        _dataInput = null;
-                        return Redirect("/Customers/Customers?area=Customers");
+                        if (await SaveAsync())
+                        {
+                            _dataClient2 = null;
+                            _dataClient1 = null;
+                            _dataInput = null;
+                            return Redirect("/Customers/Customers?area=Customers");
+                        }
+                        else
+                        {
+                            return Redirect("/Customers/Register");
+                        }
                     }
                     else
                     {
-                        return Redirect("/Customers/Register");
+                        return Redirect("/Customers/Customers?area=Customers");
                     }
-                    //}
-                    //else
-                    //{
-                    //    return Redirect("/Customers/Customers?area=Customers");
-                    //}
                 }
                 else
                 {
-                    //if (User.IsInRole("Admin"))
-                    //{
-                    if (await UpdateAsync())
+                    if (User.IsInRole("Admin"))
                     {
-                        var url = $"/Customers/Account/Details?id={_dataClient2.IdClient}";
-                        _dataClient2 = null;
-                        _dataClient1 = null;
-                        _dataInput = null;
-                        return Redirect(url);
+                        if (await UpdateAsync())
+                        {
+                            var url = $"/Customers/Account/Details?id={_dataClient2.IdClient}";
+                            _dataClient2 = null;
+                            _dataClient1 = null;
+                            _dataInput = null;
+                            return Redirect(url);
+                        }
+                        else
+                        {
+                            return Redirect("/Customers/Register");
+                        }
                     }
                     else
                     {
-                        return Redirect("/Customers/Register?id=1");
+                        return Redirect("/Customers/Customers?area=Customers");
                     }
-                    //}
-                    //else
-                    //{
-                    //    return Redirect("/Customers/Customers?area=Customers");
-                    //}
                 }
             }
             else
@@ -168,7 +167,8 @@ namespace SalesSystem.Areas.Customers.Pages.Account
                 if (clientList.Count.Equals(0))
                 {
                     var strategy = _context.Database.CreateExecutionStrategy();
-                    await strategy.ExecuteAsync(async () => {
+                    await strategy.ExecuteAsync(async () =>
+                    {
                         using (var transaction = _context.Database.BeginTransaction())
                         {
 
@@ -237,7 +237,7 @@ namespace SalesSystem.Areas.Customers.Pages.Account
         }
         private async Task<bool> UpdateAsync()
         {
-            _dataInput = Input;
+            //_dataInput = Input;
             var valor = false;
             byte[] imageByte = null;
             var strategy = _context.Database.CreateExecutionStrategy();
@@ -247,6 +247,7 @@ namespace SalesSystem.Areas.Customers.Pages.Account
                     try
                     {
                         var clientData = _customer.getTClient(Input.Nid);
+
                         if (clientData.Count.Equals(0) || clientData[0].IdClient.Equals(_dataClient2.IdClient))
                         {
                             if (Input.AvatarImage == null)
