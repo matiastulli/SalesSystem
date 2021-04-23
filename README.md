@@ -6,4 +6,8 @@ El proyecto permite cargar datos de clientes con sus respectivos saldos y habere
 
 ## Previsualización
 
-![](/inicio.png)
+![](/images/inicio.png)
+
+## Usuarios
+
+![](/images/users.png)
