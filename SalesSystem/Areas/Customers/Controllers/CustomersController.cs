@@ -60,5 +60,21 @@ namespace SalesSystem.Areas.Customers.Controllers
             }
                 
         }
+
+        public string Fees(int fees, int idClient)
+        {
+            return fees.Equals(0) ? "" : _customer.AmountFees(fees, idClient);
+
+            //Son operaciones equivalentes, la de arriba esta simplificada!!
+
+            //if (!fees.Equals(0))
+            //{
+            //    return 
+            //}
+            //else
+            //{
+            //    return "";
+            //}
+        }
     }
 }

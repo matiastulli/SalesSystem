@@ -215,6 +215,9 @@ namespace SalesSystem.Library
                     p.CurrentDebt,
                     p.Date,
                     p.DeadLine,
+                    p.DateDebt,
+                    p.Monthly,
+                    p.PreviousDebt,
                     p.Ticket,
                     p.IDUser,
                     p.User
@@ -240,6 +243,9 @@ namespace SalesSystem.Library
                         Date = data.Date,
                         Ticket = data.Ticket,
                         Deadline = data.DeadLine,
+                        DateDebt = data.DateDebt,
+                        Monthly = data.Monthly,
+                        PreviousDebt = data.PreviousDebt,
                         IdUser = data.IDUser,
                         User = data.User,
                           
@@ -251,6 +257,8 @@ namespace SalesSystem.Library
 
         public int _interestsCuotas = 0;
         private Decimal _interests;
+
+        //VIDEO 76 cargo datos
 
         public InputModelInterests getTClientInterests(int id)
         {
@@ -290,5 +298,31 @@ namespace SalesSystem.Library
             }
             return dataInterests;
         }
+        public string AmountFees(int fees, int idClient)
+        {
+            Decimal interests = 0;
+            var listInterests = _context.TCustomer_interests.Where(c => c.IdCustomer.Equals(idClient) && c.Canceled.Equals(false)).ToList();
+
+            if (!listInterests.Count.Equals(0))
+            {
+                if (listInterests.Count <= fees && fees <= listInterests.Count)
+                {
+                    for (int i = 0; i < fees; i++)
+                    {
+                        interests += listInterests[i].Interests;
+                    }
+                    return string.Format("{0:#,###,###,##0.00####}", interests);
+                }
+                else
+                {
+                    return "Se sobrepaso de las cuotas a pagar";
+                }
+            }
+            else
+            {
+                return "El cliente no debe intereses";
+            }
+        }
+
     }
 }

@@ -18,4 +18,10 @@ var imageCustomer = (evt) => {
 $().ready(() => {
     let URLactual = window.location.pathname;
     principal.userLink(URLactual);
+
+    //Tener cuidado aca con las mayusculas y minusculas
+    $("#Input_AmountFees").change((e) => {
+        let idClient = window.location.search.replace("?id=", "");
+        customers.GetInterests(e, null, idClient);
+    });
 });

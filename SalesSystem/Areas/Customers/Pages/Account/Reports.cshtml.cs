@@ -90,12 +90,14 @@ namespace SalesSystem.Areas.Customers.Pages.Account
             public DateTime Time1 { get; set; } = DateTime.Now.Date;
             public DateTime Time2 { get; set; } = DateTime.Now.Date;
 
-            [Required(ErrorMessage = "Ingrese la cantidad de cuotas a cancelar.")]
-            public string AmountFees { get; set; }
+            public int AmountFees { get; set; }
         }
         public async Task<IActionResult> OnPostAsync()
         {
             var idUser = _userManager.GetUserId(User);
+            var dateNow = DateTime.Now;
+            var user = _context.TUsers.Where(u => u.IdUser.Equals(idUser)).ToList();
+            var name = $"{user[0].Name} {user[0].LastName}";
 
             switch (Input.RadioOptions)
             {
@@ -112,10 +114,10 @@ namespace SalesSystem.Areas.Customers.Pages.Account
                         {
                             var _ticket = _codes.codesTickets(_dataClient.Ticket);
                             var _nameCliente = $"{_dataClient.Name}{_dataClient.LastName}";
-                            var dateNow = DateTime.Now;
+                            
                             var nowDate = $"{dateNow.Day}/{dateNow.Month}/{dateNow.Year}";
-                            var user = _context.TUsers.Where(u => u.IdUser.Equals(idUser)).ToList();
-                            var name = $"{user[0].Name} {user[0].LastName}";
+                            
+                           
                             if (Input.Payment.Equals(_dataClient.CurrentDebt) || Input.Payment > _dataClient.CurrentDebt)
                             {
                                 change = Input.Payment - _dataClient.CurrentDebt;
@@ -233,6 +235,71 @@ namespace SalesSystem.Areas.Customers.Pages.Account
                         }
                     }
                     break;
+
+                case 2:
+                    var strategy2 = _context.Database.CreateExecutionStrategy();
+                    await strategy2.ExecuteAsync(async () => {
+                        using (var transaction = _context.Database.BeginTransaction())
+                        {
+                            try
+                            {
+                                Decimal changes = 0;
+                                List<TCustomer_interests_reports> interests = null;
+                                var fees = _customer.AmountFees(Input.AmountFees, idClient);
+                                var amountFees = Convert.ToDecimal(fees);
+                                using (var dbContext = new ApplicationDbContext())
+                                {
+                                    interests = dbContext.TCustomer_interests_reports.Where(
+                                        c => c.IdClient.Equals(_dataClient.IdClient)).ToList();
+                                }
+                                var interest = interests.Count > 0 ? interests.ElementAt(0) : new TCustomer_interests_reports();
+                                var ticket = _codes.codesTickets(interest.TicketInterest);
+                                if (Input.Payment >= amountFees)
+                                {
+                                    if (Input.Payment > amountFees)
+                                    {
+                                        changes = Input.Payment - amountFees;
+                                    }
+                                    var report = new TCustomer_interests_reports
+                                    {
+                                        IdinterestReports = interest.IdinterestReports,
+                                        Interests = amountFees,
+                                        Payment = Input.Payment,
+                                        Change = changes,
+                                        Fee = Input.AmountFees,
+                                        InterestDate = dateNow,
+                                        TicketInterest = ticket,
+                                        IdClient = _dataClient.IdClient,
+                                    };
+                                    _context.Update(report);
+                                    _context.SaveChanges();
+
+                                    var reports = new TPayments_Reports_Customer_Interest
+                                    {
+                                        Interests = amountFees,
+                                        Payment = Input.Payment,
+                                        Change = changes,
+                                        Fee = Input.AmountFees,
+                                        Date = dateNow,
+                                        Ticket = ticket,
+                                        IdUser = idUser,
+                                        User = name,
+                                        IdCustomer = _dataClient.IdClient,
+                                        
+
+                                    };
+                                    _context.Add(reports);
+                                    _context.SaveChanges();
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                _errorMessage = ex.Message;
+                                transaction.Rollback();
+                            }
+                        }
+                     });
+                     break;
             }
             return Redirect("/Customers/Reports?id=" + idClient);
         }

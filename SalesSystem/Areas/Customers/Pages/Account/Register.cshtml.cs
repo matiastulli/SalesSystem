@@ -112,17 +112,17 @@ namespace SalesSystem.Areas.Customers.Pages.Account
                 {
                     //if (User.IsInRole("Admin"))
                     //{
-                        if (await SaveAsync())
-                        {
+                    if (await SaveAsync())
+                    {
                         _dataClient2 = null;
                         _dataClient1 = null;
                         _dataInput = null;
                         return Redirect("/Customers/Customers?area=Customers");
-                        }
-                        else
-                        {
-                            return Redirect("/Customers/Register");
-                        }
+                    }
+                    else
+                    {
+                        return Redirect("/Customers/Register");
+                    }
                     //}
                     //else
                     //{

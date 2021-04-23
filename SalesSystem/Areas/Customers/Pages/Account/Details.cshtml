@@ -93,10 +93,10 @@
                                 <td>
                                     <form asp-area="Customers" asp-page="Register" method="post">
                                         @{
-                                            var DataClient = JsonConvert.SerializeObject(Model.Input.DataClient);
+                                            var dataClient = JsonConvert.SerializeObject(Model.Input.DataClient);
                                         }
 
-                                        <input type="hidden" name="DataClient" value="@DataClient" />
+                                        <input type="hidden" name="DataClient" value="@dataClient" />
                                         <input type="submit" value="Editar" class="btn btn-success ">
                                     </form>
                                 </td>

@@ -20,6 +20,7 @@ class Principal {
                 document.getElementById("inlineRadio2").checked = false;
                 document.getElementById("inlineRadio1").disabled = false;
                 document.getElementById("inlineRadio2").disabled = true;
+                new Customers().Restore();
                 break;
         }
     }
