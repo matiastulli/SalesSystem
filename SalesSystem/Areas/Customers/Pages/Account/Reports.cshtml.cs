@@ -62,6 +62,7 @@ namespace SalesSystem.Areas.Customers.Pages.Account
                 ErrorMessage = _errorMessage,
                 TPayments = _customer.GetPayments(id, 1, 10, _dataClient, Request),
                 DataInterests = _dataInterests,
+                TInterest = _customer.GetInterests(id, 1, 10, _dataClient, Request),
             };
             _errorMessage = "";
             return Page();    
@@ -91,13 +92,17 @@ namespace SalesSystem.Areas.Customers.Pages.Account
             public DateTime Time2 { get; set; } = DateTime.Now.Date;
 
             public int AmountFees { get; set; }
+            public DataPaginador<TPayments_Reports_Customer_Interest> TInterest { get; set; }
         }
         public async Task<IActionResult> OnPostAsync()
         {
             var idUser = _userManager.GetUserId(User);
+
             var dateNow = DateTime.Now;
+            var _nameCliente = $"{_dataClient.Name}{_dataClient.LastName}";
             var user = _context.TUsers.Where(u => u.IdUser.Equals(idUser)).ToList();
             var name = $"{user[0].Name} {user[0].LastName}";
+            var nowDate = $"{dateNow.Day}/{dateNow.Month}/{dateNow.Year}";
 
             switch (Input.RadioOptions)
             {
@@ -113,9 +118,9 @@ namespace SalesSystem.Areas.Customers.Pages.Account
                         if (Input.Payment >= _dataClient.Monthly)
                         {
                             var _ticket = _codes.codesTickets(_dataClient.Ticket);
-                            var _nameCliente = $"{_dataClient.Name}{_dataClient.LastName}";
                             
-                            var nowDate = $"{dateNow.Day}/{dateNow.Month}/{dateNow.Year}";
+                            
+                            
                             
                            
                             if (Input.Payment.Equals(_dataClient.CurrentDebt) || Input.Payment > _dataClient.CurrentDebt)
@@ -152,25 +157,50 @@ namespace SalesSystem.Areas.Customers.Pages.Account
 
                                         var _deadLine = _dataClient.CurrentDebt.Equals(0.0m) ? "--/--/--" : $"{date.Day}/{date.Month}/{date.Year}";
                                         var client = _context.TClients.Where(c => c.IdClient.Equals(_dataClient.IdClient)).ToList().ElementAt(0);
-                                        var report = new TReports_clients
+
+                                        if (_currentDebt.Equals(0.0))
                                         {
-                                            IdReport = _dataClient.IdReport,
-                                            Debt = _dataClient.Debt,
-                                            DateDebt = _dataClient.DateDebt,
-                                            Monthly = _dataClient.Monthly,
-                                            Change = change,
-                                            LastPayment = Input.Payment,
-                                            DatePayment = dateNow,
-                                            CurrentDebt = _currentDebt,
-                                            Ticket = _ticket,
-                                            Deadline = date,
-                                            TClients = client
+                                            var report = new TReports_clients
+                                            {
+                                                IdReport = _dataClient.IdReport,
+                                                Debt = 0.0m,
+                                                DateDebt = dateNow,
+                                                Monthly = 0.0m,
+                                                Change = 0.0m,
+                                                LastPayment = 0.0m,
+                                                DatePayment = dateNow,
+                                                CurrentDebt = 0.0m,
+                                                Ticket = "00000000000",
+                                                Deadline = dateNow,
+                                                TClients = client
 
-                                        };
+                                            };
 
-                                        _context.Update(report);
-                                        _context.SaveChanges();
+                                            _context.Update(report);
+                                            _context.SaveChanges();
+                                        }
+                                        else
+                                        {
+                                            var report = new TReports_clients
+                                            {
+                                                IdReport = _dataClient.IdReport,
+                                                Debt = _dataClient.Debt,
+                                                DateDebt = _dataClient.DateDebt,
+                                                Monthly = _dataClient.Monthly,
+                                                Change = change,
+                                                LastPayment = Input.Payment,
+                                                DatePayment = dateNow,
+                                                CurrentDebt = _currentDebt,
+                                                Ticket = _ticket,
+                                                Deadline = date,
+                                                TClients = client
 
+                                            };
+
+                                            _context.Update(report);
+                                            _context.SaveChanges();
+                                        }
+                                        
                                         var payments = new TPayments_clients
                                         {
                                             Debt = _dataClient.Debt,
@@ -245,12 +275,16 @@ namespace SalesSystem.Areas.Customers.Pages.Account
                             {
                                 Decimal changes = 0;
                                 List<TCustomer_interests_reports> interests = null;
+                                List<TCustomer_interests> listInterests = null;
                                 var fees = _customer.AmountFees(Input.AmountFees, idClient);
                                 var amountFees = Convert.ToDecimal(fees);
                                 using (var dbContext = new ApplicationDbContext())
                                 {
                                     interests = dbContext.TCustomer_interests_reports.Where(
                                         c => c.IdClient.Equals(_dataClient.IdClient)).ToList();
+
+                                    listInterests = dbContext.TCustomer_interests.Where(
+                                        c => c.IdCustomer.Equals(_dataClient.IdClient) && c.Canceled.Equals(false)).ToList();
                                 }
                                 var interest = interests.Count > 0 ? interests.ElementAt(0) : new TCustomer_interests_reports();
                                 var ticket = _codes.codesTickets(interest.TicketInterest);
@@ -260,20 +294,7 @@ namespace SalesSystem.Areas.Customers.Pages.Account
                                     {
                                         changes = Input.Payment - amountFees;
                                     }
-                                    var report = new TCustomer_interests_reports
-                                    {
-                                        IdinterestReports = interest.IdinterestReports,
-                                        Interests = amountFees,
-                                        Payment = Input.Payment,
-                                        Change = changes,
-                                        Fee = Input.AmountFees,
-                                        InterestDate = dateNow,
-                                        TicketInterest = ticket,
-                                        IdClient = _dataClient.IdClient,
-                                    };
-                                    _context.Update(report);
-                                    _context.SaveChanges();
-
+                                    
                                     var reports = new TPayments_Reports_Customer_Interest
                                     {
                                         Interests = amountFees,
@@ -290,6 +311,83 @@ namespace SalesSystem.Areas.Customers.Pages.Account
                                     };
                                     _context.Add(reports);
                                     _context.SaveChanges();
+
+                                    if (listInterests.Count > 0)
+                                    {
+                                        using(var dbContext = new ApplicationDbContext())
+                                        {
+                                            for (int i = 0; i < Input.AmountFees; i++)
+                                            {
+                                                var interest1 = listInterests[i];
+                                                interest1.Canceled = true;
+                                                dbContext.Update(interest1);
+                                                dbContext.SaveChanges();
+                                            }
+                                        }
+                                    }
+                                    listInterests.Clear();
+                                    listInterests = _context.TCustomer_interests.Where(c => c.IdCustomer.Equals(_dataClient.IdClient) && c.Canceled.Equals(false)).ToList();
+                                    if(listInterests.Count > 0)
+                                    {
+                                        var report = new TCustomer_interests_reports
+                                        {
+                                            IdinterestReports = interest.IdinterestReports,
+                                            Interests = amountFees,
+                                            Payment = Input.Payment,
+                                            Change = changes,
+                                            Fee = Input.AmountFees,
+                                            InterestDate = dateNow,
+                                            TicketInterest = ticket,
+                                            IdClient = _dataClient.IdClient,
+                                        };
+                                        _context.Update(report);
+                                        _context.SaveChanges();
+                                    }
+                                    else
+                                    {
+                                        var report = new TCustomer_interests_reports
+                                        {
+                                            IdinterestReports = interest.IdinterestReports,
+                                            Interests = 0.0m,
+                                            Payment = 0.0m,
+                                            Change = 0.0m,
+                                            Fee = 0,
+                                            InterestDate = dateNow,
+                                            TicketInterest = "00000000000",
+                                            IdClient = _dataClient.IdClient,
+                                        };
+                                        _context.Update(report);
+                                        _context.SaveChanges();
+                                    }
+
+                                    var _payment = string.Format("{0:#,###,###,##0.00####}", Input.Payment);
+                                    var _interest = string.Format("{0:#,###,###,##0.00####}", amountFees);
+                                    var _changes = string.Format("{0:#,###,###,##0.00####}", changes);
+                                    
+                                    LTicket Ticket1 = new LTicket();
+                                    Ticket1.AbreCajon(); //Abre el cajon
+                                    Ticket1.TextoCentro("Sistema de Ventas"); //Imprime en el centro
+                                    Ticket1.TextoIzquierda("Direccion");
+                                    Ticket1.TextoIzquierda("Recoleta, CABA");
+                                    Ticket1.TextoIzquierda("Tel 2364546014");
+                                    Ticket1.LineasGuion();
+                                    Ticket1.TextoCentro("FACTURA"); //Imprime en el centro
+                                    Ticket1.LineasGuion();
+                                    Ticket1.TextoIzquierda($"Factura: {ticket}");
+                                    Ticket1.TextoIzquierda($"Cliente: {_nameCliente}");
+                                    Ticket1.TextoIzquierda($"Fecha: {nowDate}");
+                                    Ticket1.TextoIzquierda($"Usuario: {name}");
+                                    Ticket1.LineasGuion();
+                                    Ticket1.TextoCentro($"Intereses{Money}{_interest}");
+                                    Ticket1.TextoExtremo($"Pago:", $"{Money}{_payment}");
+                                    Ticket1.TextoExtremo($"Cambio:", $"{Money}{_changes}");
+                                    Ticket1.TextoCentro("Juan Matias Tulli");
+                                    Ticket1.CortaTicket(); //Corta el ticket
+
+                                    Ticket1.ImprimirTicket("Microsoft XPS Document Writer");
+
+
+                                    transaction.Commit();
                                 }
                             }
                             catch (Exception ex)

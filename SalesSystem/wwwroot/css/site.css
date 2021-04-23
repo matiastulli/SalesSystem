@@ -46,6 +46,18 @@ input[type="file"] {
     max-width: 70%;
 }
 
+#contenedor {
+    text-align: center;
+}
+
+.imagePrincipal {
+    padding: 5px 10px 5px 10px;
+    margin: 2px;
+    float: left;
+    width: 200px;
+    text-align: center;
+}
+
 .imglogo {
     max-width: 100%;
 }
@@ -57,6 +69,7 @@ input[type="file"] {
 .border-bottom {
     border-bottom: 3px solid #d6d5d5 !important;
 }
+
 /* Sticky footer styles
 -------------------------------------------------- */
 html {

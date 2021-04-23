@@ -324,5 +324,77 @@ namespace SalesSystem.Library
             }
         }
 
+        public DataPaginador<TPayments_Reports_Customer_Interest> GetInterests
+            (int id, int page, int num, InputModelRegister input, HttpRequest request)
+        {
+            Object[] objects = new Object[3];
+            var url = request.Scheme + "://" + request.Host.Value;
+            var data = GetInterests_Clients(input, id);
+            if (0 < data.Count)
+            {
+                //Historial de pagos en reversa
+                //De mayor a menor
+                data.Reverse();
+                objects = new LPaginador<TPayments_Reports_Customer_Interest>().paginador(data, page, num, "Customers", "Customers", "Customers/Reports", url);
+            }
+            else
+            {
+                objects[0] = "No data";
+                objects[1] = "No data";
+                objects[2] = new List<TPayments_Reports_Customer_Interest>();
+
+            }
+            var models = new DataPaginador<TPayments_Reports_Customer_Interest>
+            {
+                List = (List<TPayments_Reports_Customer_Interest>)objects[2],
+                Pagi_info = (string)objects[0],
+                Pagi_navegacion = (string)objects[1],
+                Input = new TPayments_Reports_Customer_Interest()
+            };
+            return models;
+        }
+
+        public List<TPayments_Reports_Customer_Interest> GetInterests_Clients(InputModelRegister input, int id)
+        {
+            var listTPayments = new List<TPayments_Reports_Customer_Interest>();
+            var listTPayments2 = new List<TPayments_Reports_Customer_Interest>();
+
+            /* Menos de cero: si t1 es anterior a t2.
+             * Cero: si t1 es igual a t2.
+             * Mayor que cero: si t1 es posterior a t2
+            */
+            var t1 = input.Time1.ToString("dd/MM/yyyy");
+            var t2 = input.Time2.ToString("dd/MM/yyyy");
+
+            if (t1.Equals(t2) && DateTime.Now.ToString("dd/MM/yyyy").Equals(t1) && DateTime.Now.ToString("dd/MM/yy").Equals(t2))
+            {
+                listTPayments2 = _context.TPayments_Reports_Customer_Interest.Where(c => c.IdCustomer.Equals(id)).ToList();
+            }
+            else
+            {
+                foreach (var item in _context.TPayments_Reports_Customer_Interest.Where(c => c.IdCustomer.Equals(id)).ToList())
+                {
+                    int fecha1 = DateTime.Compare(DateTime.Parse(
+                                    item.Date.ToString("dd/MM/yyyy")), DateTime.Parse(t1));
+
+                    if (fecha1.Equals(0) || fecha1 > 0)
+                    {
+                        listTPayments.Add(item);
+                    }
+                }
+                foreach (var item in listTPayments)
+                {
+                    int fecha2 = DateTime.Compare(DateTime.Parse(
+                                    item.Date.ToString("dd/MM/yyyy")), DateTime.Parse(t2));
+
+                    if (fecha2.Equals(0) || fecha2 < 0)
+                    {
+                        listTPayments2.Add(item);
+                    }
+                }
+            }
+            return listTPayments2;
+        }
+
     }
 }
