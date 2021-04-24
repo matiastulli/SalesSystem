@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SalesSystem.Areas.Customers.Models;
+using SalesSystem.Areas.Setting.Models;
 using SalesSystem.Areas.Users.Models;
 
 namespace SalesSystem.Data
@@ -27,6 +28,7 @@ namespace SalesSystem.Data
         public DbSet<TCustomer_interests> TCustomer_interests { get; set; }
         public DbSet<TCustomer_interests_reports> TCustomer_interests_reports { get; set; }
         public DbSet<TPayments_Reports_Customer_Interest> TPayments_Reports_Customer_Interest { get; set; }
+        public DbSet<TSetting> TSetting { get; set; }
 
     }
 }

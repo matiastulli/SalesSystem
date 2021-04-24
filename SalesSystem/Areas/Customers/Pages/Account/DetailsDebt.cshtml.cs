@@ -17,7 +17,7 @@ namespace SalesSystem.Areas.Customers.Pages.Account
     {
         private static int _idDebt = 0;
         private static int _idClient = 0;
-        public string Money = "$";
+        public string Money;
         private static string _errorMessage;
         public static InputModelRegister _dataClient;
         private LCodes _codes;
@@ -33,6 +33,7 @@ namespace SalesSystem.Areas.Customers.Pages.Account
             _userManager = userManager;
             _codes = new LCodes();
             _customer = new LCustomers(context);
+            Money = LSetting.Moneda;
         }
 
         public IActionResult OnGet(int idDebt, int idClient)
@@ -62,7 +63,7 @@ namespace SalesSystem.Areas.Customers.Pages.Account
         public InputModel Input { get; set; }
         public class InputModel
         {
-            public string Money { get; set; } = "$";
+            public string Money { get; set; } = LSetting.Moneda;
 
             public InputModelRegister DataClient { get; set; }
         }
@@ -88,7 +89,7 @@ namespace SalesSystem.Areas.Customers.Pages.Account
             Ticket1.LineasGuion();
             Ticket1.TextoIzquierda($"Factura: {_dataClient.Ticket}");
             Ticket1.TextoIzquierda($"Cliente: {_nameClient}");
-            Ticket1.TextoIzquierda($"Fecha: {_dataClient.Date.ToString("dd/MM/yy")}");
+            Ticket1.TextoIzquierda($"Fecha: {_dataClient.Date:dd/MM/yy}");
             Ticket1.TextoIzquierda($"Usuario: {_dataClient.User}");
             Ticket1.LineasGuion();
             Ticket1.TextoCentro($"Su credito {Money}{_debt}");
@@ -97,7 +98,7 @@ namespace SalesSystem.Areas.Customers.Pages.Account
             Ticket1.TextoExtremo($"Pago:", $"{Money}{_payment}");
             Ticket1.TextoExtremo($"Cambio:", $"{Money}{_change}");
             Ticket1.TextoExtremo($"Deuda actual:", $"{Money}{_currentDebt}");
-            Ticket1.TextoExtremo($"Próximo pago:", $"{_dataClient.Deadline.ToString("dd/MM/yy")}");
+            Ticket1.TextoExtremo($"Próximo pago:", $"{_dataClient.Deadline:dd/MM/yy}");
             Ticket1.TextoCentro("Juan Matias Tulli");
             Ticket1.CortaTicket(); //Corta el ticket
 

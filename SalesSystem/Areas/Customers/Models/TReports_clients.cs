@@ -18,7 +18,7 @@ namespace SalesSystem.Areas.Customers.Models
         public Decimal CurrentDebt { set; get; }
         public DateTime DateDebt { set; get; }
         public string Ticket { set; get; }
-        public DateTime Deadline { set; get; }
+        public DateTime? Deadline { set; get; }
         public int TClientsIdClient { get; set; }
         public TClients TClients { get; set; }
     }

@@ -62,7 +62,7 @@ namespace SalesSystem.Library
             {
                 listTClients = dbContext.TClients.Where(u => u.Nid.Equals(Nid)).ToList();
             }
-                
+
             return listTClients;
         }
         public InputModelRegister getTClientReport(int id)
@@ -90,30 +90,48 @@ namespace SalesSystem.Library
                    r.LastPayment,
                    r.Ticket,
                    r.Deadline,
-               }).Where(c => c.IdClient.Equals(id)).ToList();
-                if (!query.Count.Equals(0))
+                   r.DateDebt,
+
+               }).ToList();
+
+                if (!id.Equals(0))
                 {
-                    var data = query.ToList().Last();
-                    dataClients = new InputModelRegister
+                    query = query.Where(c => c.IdClient.Equals(id)).ToList();
+
+                    if (!query.Count.Equals(0))
                     {
-                        IdClient = data.IdClient,
-                        Nid = data.Nid,
-                        Name = data.Name,
-                        LastName = data.LastName,
-                        Phone = data.Phone,
-                        Email = data.Email,
-                        Direction = data.Direction,
-                        Credit = data.Credit,
-                        IdReport = data.IdReport,
-                        Debt = data.Debt,
-                        Monthly = data.Monthly,
-                        Change = data.Change,
-                        CurrentDebt = data.CurrentDebt,
-                        DatePayment = data.DatePayment,
-                        LastPayment = data.LastPayment,
-                        Ticket = data.Ticket,
-                        Deadline = data.Deadline,
-                    };
+                        var data = query.ToList().Last();
+                        dataClients = new InputModelRegister
+                        {
+                            IdClient = data.IdClient,
+                            Nid = data.Nid,
+                            Name = data.Name,
+                            LastName = data.LastName,
+                            Phone = data.Phone,
+                            Email = data.Email,
+                            Direction = data.Direction,
+                            Credit = data.Credit,
+                            IdReport = data.IdReport,
+                            Debt = data.Debt,
+                            Monthly = data.Monthly,
+                            Change = data.Change,
+                            CurrentDebt = data.CurrentDebt,
+                            DatePayment = data.DatePayment,
+                            LastPayment = data.LastPayment,
+                            Ticket = data.Ticket,
+                            Deadline = data.Deadline,
+                        };
+                    }
+                }
+                else
+                {
+                    foreach (var item in query)
+                    {
+                        if (item.Deadline != null)
+                        {
+
+                        }
+                    }
                 }
             }
             return dataClients;
@@ -140,13 +158,13 @@ namespace SalesSystem.Library
             }
             var models = new DataPaginador<TPayments_clients>
             {
-                List = (List<TPayments_clients>) objects[2],
+                List = (List<TPayments_clients>)objects[2],
                 Pagi_info = (string)objects[0],
                 Pagi_navegacion = (string)objects[1],
                 Input = new TPayments_clients()
             };
             return models;
-        
+
         }
 
         //VIDEO 71
@@ -248,7 +266,7 @@ namespace SalesSystem.Library
                         PreviousDebt = data.PreviousDebt,
                         IdUser = data.IDUser,
                         User = data.User,
-                          
+
                     };
                 }
             }
@@ -402,7 +420,8 @@ namespace SalesSystem.Library
             using (var dbContext = new ApplicationDbContext())
             {
                 var query = dbContext.TPayments_Reports_Customer_Interest.Join(dbContext.TClients,
-                    p => p.IdCustomer, c => c.IdClient, (p, c) => new {
+                    p => p.IdCustomer, c => c.IdClient, (p, c) => new
+                    {
 
                         c.IdClient,
                         c.Nid,
@@ -457,5 +476,5 @@ namespace SalesSystem.Library
 
 
     }
- 
+
 }

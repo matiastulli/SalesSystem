@@ -9,7 +9,7 @@ namespace SalesSystem.Areas.Setting.Models
     public class InputModelSetting
     {
         [Required(ErrorMessage = "Seleccione una opcion.")]
-        public int RadioOptiones { get; set; }
+        public int RadioOptions { get; set; }
         public string ErrorMessage { get; set; }
         public string Type_Money { get; set; }
         [Required(ErrorMessage = "Ingrese los intereses.")]

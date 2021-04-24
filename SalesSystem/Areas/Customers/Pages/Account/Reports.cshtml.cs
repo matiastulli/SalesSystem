@@ -20,7 +20,7 @@ namespace SalesSystem.Areas.Customers.Pages.Account
     {
         private LCustomers _customer;
         private static int idClient = 0;
-        public string Money = "$";
+        public string Money;
         private static string _errorMessage;
         public static InputModelRegister _dataClient;
         public static InputModelInterests _dataInterests;
@@ -36,6 +36,7 @@ namespace SalesSystem.Areas.Customers.Pages.Account
             _userManager = userManager;
             _codes = new LCodes();
             _customer = new LCustomers(context);
+            Money = LSetting.Moneda;
         }
         public IActionResult OnGet(int id, InputModel input)
         {
@@ -72,7 +73,7 @@ namespace SalesSystem.Areas.Customers.Pages.Account
         public InputModel Input { get; set; }
         public class InputModel
         {
-            public string Money { get; set; } = "$";
+            public string Money { get; set; } = LSetting.Moneda;
             [Required(ErrorMessage = "Seleccione una opcion.")]
             public int RadioOptions { get; set; }
 
@@ -171,7 +172,7 @@ namespace SalesSystem.Areas.Customers.Pages.Account
                                                 DatePayment = dateNow,
                                                 CurrentDebt = 0.0m,
                                                 Ticket = "00000000000",
-                                                Deadline = dateNow,
+                                                Deadline = null,
                                                 TClients = client
 
                                             };

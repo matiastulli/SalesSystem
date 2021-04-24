@@ -14,7 +14,7 @@ namespace SalesSystem.Areas.Customers.Pages.Account
     {
         private static int _idDebt = 0;
         private static int _idClient = 0;
-        public string Money = "$";
+        public string Money;
         public static InputModelRegister _dataClient;
         private LCustomers _customer;
 
@@ -22,6 +22,7 @@ namespace SalesSystem.Areas.Customers.Pages.Account
             ApplicationDbContext context)
         {
             _customer = new LCustomers(context);
+            Money = LSetting.Moneda;
         }
 
         public IActionResult OnGet(int idDebt, int idClient)
@@ -51,7 +52,7 @@ namespace SalesSystem.Areas.Customers.Pages.Account
         public InputModel Input { get; set; }
         public class InputModel
         {
-            public string Money { get; set; } = "$";
+            public string Money { get; set; } = LSetting.Moneda;
 
             public InputModelRegister DataClient { get; set; }
         }
